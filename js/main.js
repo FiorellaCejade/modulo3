@@ -1,14 +1,27 @@
 let conteiner = document.getElementById("contenedor-tarjetas")
 let contenedorCheckBox = document.getElementById("contenedorCheckBox")
 let searchBar = document.getElementById("search")
-let eventos = data.events
-let categorias = eventos.map(evento => evento.category) // al array de ventos le aplique el metodo map que devuelve un array de las cat del evento 
-categorias = new Set(categorias)
-categorias = Array.from(categorias)
+let eventos;
+let categorias 
 
-crearTarjetas(eventos)
+fetch ("http://amazing-events.herokuapp.com/api/events")
+    .then( response => response.json() )
+    .then( json => {
+        data = json
+        eventos = data.events
+        categorias = eventos.map(evento => evento.category)
+        categorias = new Set(categorias)
+        categorias = Array.from(categorias)
 
-function crearTarjetas(listaEventos) { // declafe esta funcion que como parametro recibe un array 
+        crearTarjetas(eventos)
+        crearCheckbox(categorias)
+    } )
+
+    .catch( error => console.log(error) )
+
+
+
+function crearTarjetas(listaEventos) { 
 
     conteiner.innerHTML = ""
 
@@ -55,33 +68,32 @@ function crearCheckbox(categoriasCheckbox) {
     contenedorCheckBox.appendChild(fragment)
 }
 
-crearCheckbox(categorias)
+
 
 
 
 contenedorCheckBox.addEventListener( 'change', (e) => { 
-    crearTarjetas(filtroSearch (filtrarPorChecked(eventos))) // creartarjeta reicbe un array 
+    crearTarjetas(filtroSearch (filtrarPorChecked(eventos)))  
 } )
 
 
-function filtrarPorChecked(listaEventos){ // retorna un array tarjetas filtradas por categoria 
+function filtrarPorChecked(listaEventos){ 
 
     let checkedValues = Array.from( document.querySelectorAll( 'input[type="checkbox"]:checked' ) ).map( input => input.value )// lista de los valores de los checkbox chequeado
 
-    if( checkedValues.length != 0){ // si tiene contenido lo filtra sino retorna el array como lo recibe
+    if( checkedValues.length != 0){ 
         return listaEventos.filter( evento => checkedValues.includes( evento.category )) 
-    }else {   // va a retorna la tarjeta cuya categoria del evento este incluida en la lista de los valores checkeados
+    }else {  
         return listaEventos
     }
 }
 
-function filtroSearch(listaEventos){ // return un array filtrado por busqueda 
-
+function filtroSearch(listaEventos){ 
     let searchChecked = searchBar[0].value.toLowerCase().trim() // 
 
     if(searchChecked != ""){
-        return listaEventos.filter( evento => evento.name.toLowerCase().includes( searchChecked )) // array eventos recorre 1 x 1 los objetos y le 
-    }else{                                                                                    
+        return listaEventos.filter( evento => evento.name.toLowerCase().includes( searchChecked )) 
+    }else{                                                                               
         return listaEventos
     }
 
@@ -89,7 +101,7 @@ function filtroSearch(listaEventos){ // return un array filtrado por busqueda
 
 searchBar.addEventListener( "keyup" , (e) =>{
 
-    crearTarjetas(filtroSearch (filtrarPorChecked(eventos))) // doble filtro 1filtra x boton de checked y luego por la barra d ebusqueda
+    crearTarjetas(filtroSearch (filtrarPorChecked(eventos))) 
 })
 
 searchBar.addEventListener("submit" , (e) => e.preventDefault()) // como se comporta como un formulario le digo que no haga la recarga de la pagina

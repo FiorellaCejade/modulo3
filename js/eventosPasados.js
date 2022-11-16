@@ -1,13 +1,24 @@
 let conteiner = document.getElementById("contenedor")
 let contenedorCheckBox = document.getElementById("contenedorCheckBox")
 let searchBar = document.getElementById("search")
-let eventos = data.events
-let categorias = eventos.map(evento => evento.category)
-categorias = new Set(categorias)
-categorias = Array.from(categorias)
-// console.log(categorias)
+let eventos
+let categorias 
 
-crearTarjetas(eventos)
+fetch ("http://amazing-events.herokuapp.com/api/events")
+    .then( response => response.json() )
+    .then( json => {
+        data = json
+        eventos = data.events
+        categorias = eventos.map(evento => evento.category)
+        categorias = new Set(categorias)
+        categorias = Array.from(categorias)
+
+        crearTarjetas(eventos)
+        crearCheckbox(categorias)
+    } )
+
+    .catch( error => console.log(error) )
+
 
 function crearTarjetas(listaEventos) {
 
@@ -58,7 +69,6 @@ function crearCheckbox(categoriasCheckbox) {
     contenedorCheckBox.appendChild(fragment)
 }
 
-crearCheckbox(categorias)
 
 contenedorCheckBox.addEventListener( 'change', (e) => {
     crearTarjetas(filtroSearch (filtrarPorChecked(eventos))) // creartarjeta reicbe un array 

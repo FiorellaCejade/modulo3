@@ -1,13 +1,21 @@
-let eventos = data.events;
+let eventos
 
-const queryString = location.search;
-const params = new URLSearchParams(queryString);
-const id = params.get("id");
+let queryString
+let params
+let id
+let tarjeta
 
-let tarjeta = eventos.find(item => item._id == id)
-
-const div = document.getElementById("container")
-div.innerHTML = `
+fetch ("http://amazing-events.herokuapp.com/api/events")
+    .then( response => response.json() )
+    .then( json => {
+        data = json
+        eventos = data.events
+        queryString = location.search;
+        params = new URLSearchParams(queryString);
+        id = params.get("id")
+        tarjeta = eventos.find(item => item._id == id)
+        const div = document.getElementById("container")
+            div.innerHTML = `
                 <div class="card rounded-4 cartaGrande" style="width: 16rem; height: 23rem;">
                 <img src="${tarjeta.image}" class="card-img-top" alt="FeriaDeComidas">
                 <div class="card-body">
@@ -22,3 +30,9 @@ div.innerHTML = `
                 </div>
                 </div>
                     `
+
+} )
+.catch( error => console.log(error) )
+
+
+
